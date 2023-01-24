@@ -19,7 +19,7 @@ class SimpleReport:
             if product["data_de_validade"] < validade_mais_proxima:
                 validade_mais_proxima = product["data_de_validade"]
         return (
-            f"Data de fabricação mais antiga:{data_de_produção}\n"
+            f"Data de fabricação mais antiga: {data_de_produção}\n"
             f"Data de validade mais próxima: {validade_mais_proxima}\n"
             f"Empresa com mais produtos: {empresa_com_mais_produtos}"
         )
