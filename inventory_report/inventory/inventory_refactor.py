@@ -1,7 +1,8 @@
+from collections.abc import Iterable
 from inventory_report.reports.simple_report import SimpleReport
 from inventory_report.reports.complete_report import CompleteReport
 from inventory_report.inventory.inventory_iterator import InventoryIterator
-from collections.abc import Iterable
+from inventory_report.importer.csv_importer import CsvImporter
 
 
 class InventoryRefactor(Iterable):
@@ -9,15 +10,32 @@ class InventoryRefactor(Iterable):
         self.importer = importer
         self.data = []
 
-    def import_data(self, path, type_report):
-        self.data.extend(self.importer.import_data(path))
-        if type_report == "simples":
-            return SimpleReport.generate(self.data)
-
-        if type_report == "completo":
-            return CompleteReport.generate(self.data)
-
-        raise ValueError("invalid report type")
-
     def __iter__(self):
         return InventoryIterator(self.data)
+
+    def __save_data(self, path: str) -> None:
+        imported_data = self.importer.import_data(path)
+        for data_product in imported_data:
+            self.data.append(data_product)
+
+    def import_data(self, path: str, rel_type: str) -> str:
+        self.__save_data(path)
+
+        if rel_type.lower() == "simples":
+            relatory = SimpleReport.generate(self.data)
+        elif rel_type.lower() == "completo":
+            relatory = CompleteReport.generate(self.data)
+
+        return relatory
+
+
+if __name__ == "__main__":
+    instance = InventoryRefactor(CsvImporter)
+    instance.import_data(
+        "inventory_report/data/inventory.csv", "simples"
+    )
+    iterator = iter(instance)
+    first = next(iterator)
+    second = next(iterator)
+    print(f"Primeiro elemento: {first}")
+    print(f"Segundo elemento: {second}")
