@@ -1,15 +1,16 @@
 from collections.abc import Iterator
 
 
-class InventoryInterator(Iterator):
-    def __init__(self, products):
-        self._products = products
+class InventoryIterator(Iterator):
+    def __init__(self, list):
+        self._list = list
         self._index = 0
 
     def __next__(self):
-        product = self._products[self._index]
-        if not product:
+        try:
+            item = self._list[self._index]
+        except IndexError:
             raise StopIteration()
-
-        self._products += 1
-        return product
+        else:
+            self._index += 1
+            return item

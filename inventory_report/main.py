@@ -5,20 +5,28 @@ from inventory_report.importer.xml_importer import XmlImporter
 from inventory_report.inventory.inventory_refactor import InventoryRefactor
 
 
+def select_file_type(path):
+    if path.endswith('.csv'):
+        return CsvImporter
+    elif path.endswith('.json'):
+        return JsonImporter
+    elif path.endswith('.xml'):
+        return XmlImporter
+    else:
+        raise ValueError('Invalid format file')
+
+
 def main():
     pass
-    importers = {"csv": CsvImporter, "json": JsonImporter, "xml": XmlImporter}
+    if len(sys.argv) < 3:
+        print(ValueError('Verifique os argumentos'), file=sys.stderr)
+        return
 
-    if len(sys.argv) == 3:
-        file_type = sys.argv[1].split(".", 1)[1]
-        relatory = InventoryRefactor(importers[file_type]).import_data(
-            sys.argv[1], sys.argv[2]
-        )
+    *_, path, type = sys.argv
 
-        sys.stdout.write(relatory)
-        return relatory
-    else:
-        sys.stderr.write("Verifique os argumentos\n")
+    file_type = select_file_type(path)
+    report = InventoryRefactor(file_type).import_data(path, type)
+    print(report, end="")
 
 
 if __name__ == "__main__":
